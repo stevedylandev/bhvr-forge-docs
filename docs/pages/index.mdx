@@ -1,0 +1,165 @@
+---
+layout: minimal
+---
+
+import { Button } from 'vocs/components'
+
+![cover](https://cdn.bhvr.dev/bhvr-forge.png)
+
+`bhvr-forge` is a comprehensive full-stack TypeScript and Solidity monorepo starter that builds on the existing [bhvr stack](https://bhvr.dev) by adding blockchain capabilities through Foundry integration. This guide will help you understand how bhvr-forge works and how to get started with its smart contract features.
+
+## Project Structure
+
+bhvr-forge extends the traditional bhvr stack with an additional `contracts` package:
+
+```
+.
+├── client/               # React frontend
+├── server/               # Hono backend
+├── shared/               # Shared TypeScript definitions
+│   └── src/types/        # Type definitions used by both client and server
+├── contracts/            # Solidity smart contracts with Foundry
+│   ├── src/              # Contract source files
+│   ├── script/           # Deployment scripts
+│   └── test/             # Contract test files
+└── package.json          # Root package.json with workspaces
+```
+
+## Prerequisites
+
+Before you can use bhvr-forge, you need to have:
+
+1. [Bun](https://bun.sh) installed for JavaScript/TypeScript development
+2. [Foundry](https://getfoundry.sh) installed for Solidity development
+
+To verify your Foundry installation, run:
+
+```bash
+forge --version
+```
+
+## Setting Up a New Project
+
+Create a new bhvr-forge project using Bun's create command:
+
+```bash
+bun create bhvr-forge@latest
+```
+
+This will set up the entire monorepo with all the necessary packages.
+
+## Working with Smart Contracts
+
+bhvr-forge comes with a simple Counter contract for demonstration purposes, located in the `contracts/src` directory.
+
+### Local Development Workflow
+
+::::steps
+
+#### Start the local Anvil blockchain
+
+In a separate terminal, run:
+```bash [terminal]
+anvil
+```
+
+This starts a local Ethereum testnet on your machine with pre-funded accounts.
+
+#### Deploy your contracts
+
+```bash
+cd contracts
+bun run deploy:local
+```
+
+This command:
+- Compiles your Solidity contracts
+- Generates TypeScript types for your contracts (enabling type safety when interacting with them)
+- Deploys the contracts to your local Anvil network
+- Updates address references in your codebase
+
+#### Start the development server
+
+```bash
+cd ../
+bun run dev
+```
+
+This starts the full-stack application, including:
+- React frontend (client)
+- Hono backend (server)
+- Type compilation watcher (shared)
+
+#### Interact with your contract
+
+The starter template includes examples of how to interact with your contract from the React frontend. You can call the Counter contract's state and increment it through the UI.
+
+::::
+
+## Understanding Contract Types
+
+One of the powerful features of bhvr-forge is automatic type generation for your smart contracts. When you deploy your contracts, TypeScript types are generated, enabling:
+
+- Type-safe contract interactions
+- Autocomplete for contract functions and parameters
+- Error detection at compile time instead of runtime
+
+These types are made available throughout the monorepo, ensuring consistency between your frontend, backend, and contract code.
+
+## Available Scripts in the Contracts Package
+
+The `contracts` package comes with several useful scripts:
+
+- `bun run build`: Compiles your contracts
+- `bun run test`: Runs contract tests
+- `bun run deploy:local`: Deploys to local Anvil network
+- `bun run generate-types`: Generates TypeScript types from your contracts
+
+## Customizing Your Contracts
+
+To add new contracts:
+
+1. Create a new Solidity file in `contracts/src/`
+
+2. Update the deployment script in `contracts/script/` to include your new contract
+
+3. Update the `contracts/wagmi.config.ts` file with the path to your new contract
+
+```ts
+import { defineConfig } from '@wagmi/cli'
+import { foundry } from '@wagmi/cli/plugins'
+
+export default defineConfig({
+  out: 'generated/contracts.ts',
+  plugins: [
+    foundry({
+      project: '.',
+      artifacts: 'out',
+      include: [ // [!code hl]
+        'Counter.sol/**', // [!code hl]
+        // Add your contract names here // [!code hl]
+      ],// [!code hl]
+    }),
+  ],
+})
+```
+
+4. Run the deployment process again
+
+5. Your new contract will be available with full type support throughout the app
+
+## Connecting to Other Networks
+
+While the default setup uses a local Anvil network, you can configure the contracts package to deploy to testnets or mainnets:
+
+1. Create environment-specific deployment scripts in the `contracts/script/` directory
+2. Configure network details in `foundry.toml`
+3. Create corresponding npm scripts in the contracts package.json
+
+## Next Step
+
+bhvr-forge combines the type-safe full-stack development of the bhvr stack with the power of Solidity smart contracts, providing a comprehensive starting point for Web3 applications. The tight integration between TypeScript and Solidity ensures a seamless development experience with shared types across the entire application.
+
+For more information on using the underlying bhvr stack, check out the official docs.
+
+<Button href="https://bhvr.dev">bhvr Docs</Button>

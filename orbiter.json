@@ -1,0 +1,6 @@
+{
+  "siteId": "3c87fed0-7804-4a29-90e3-2b1c0fbbe6b8",
+  "domain": "bhvr-forge",
+  "buildCommand": "bun run build",
+  "buildDir": "dist"
+}
